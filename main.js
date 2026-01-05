@@ -15,12 +15,21 @@ async function buscar() {
     if (!resposta.ok) throw new Error('Usuário não encontrado');
     const data = await resposta.json();
 
+    // Função auxiliar para retornar dados ou 'N/A' se não existir
+    const getStats = (type) => {
+      const perf = data.perfs?.[type];
+      if (perf) {
+        return `${perf.rating} (${perf.games} partidas)`;
+      }
+      return 'Sem dados';
+    };
+
     resultado.innerHTML = `
       <p><strong>Usuário:</strong> ${data.username}</p>
-      <p><strong>Blitz:</strong> ${data.perfs.blitz.rating} (${data.perfs.blitz.games} partidas)</p>
-      <p><strong>Bullet:</strong> ${data.perfs.bullet.rating} (${data.perfs.bullet.games} partidas)</p>
-      <p><strong>Rápido:</strong> ${data.perfs.rapid.rating} (${data.perfs.rapid.games} partidas)</p>
-      <p><strong>Clássico:</strong> ${data.perfs.classical.rating} (${data.perfs.classical.games} partidas)</p>
+      <p><strong>Blitz:</strong> ${getStats('blitz')}</p>
+      <p><strong>Bullet:</strong> ${getStats('bullet')}</p>
+      <p><strong>Rápido:</strong> ${getStats('rapid')}</p>
+      <p><strong>Clássico:</strong> ${getStats('classical')}</p>
       <p><strong>Conta criada:</strong> ${new Date(data.createdAt).toLocaleDateString()}</p>
       <p><strong>Último acesso:</strong> ${new Date(data.seenAt).toLocaleDateString()}</p>
     `;
