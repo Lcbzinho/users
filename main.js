@@ -4,34 +4,30 @@ async function buscar() {
   const resultado = document.getElementById('resultado');
 
   if (!username) {
-    alert('Digite o nome de usuário do Lichess');
+    alert('Digite o nome de usuário do GitHub');
     return;
   }
 
-  const url = `https://lichess.org/api/user/${username}`;
+  const url = `https://api.github.com/users/${username}`;
 
   try {
     const resposta = await fetch(url);
     if (!resposta.ok) throw new Error('Usuário não encontrado');
     const data = await resposta.json();
 
-    // Função auxiliar para retornar dados ou 'N/A' se não existir
-    const getStats = (type) => {
-      const perf = data.perfs?.[type];
-      if (perf) {
-        return `${perf.rating} (${perf.games} partidas)`;
-      }
-      return 'Sem dados';
-    };
-
     resultado.innerHTML = `
-      <p><strong>Usuário:</strong> ${data.username}</p>
-      <p><strong>Blitz:</strong> ${getStats('blitz')}</p>
-      <p><strong>Bullet:</strong> ${getStats('bullet')}</p>
-      <p><strong>Rápido:</strong> ${getStats('rapid')}</p>
-      <p><strong>Clássico:</strong> ${getStats('classical')}</p>
-      <p><strong>Conta criada:</strong> ${new Date(data.createdAt).toLocaleDateString()}</p>
-      <p><strong>Último acesso:</strong> ${new Date(data.seenAt).toLocaleDateString()}</p>
+      <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+        <img src="${data.avatar_url}" alt="Avatar" width="80" height="80" style="border-radius: 50%;">
+        <div>
+           <h2 style="margin: 0;">${data.name || data.login}</h2>
+           <a href="${data.html_url}" target="_blank" style="color: #4da6ff;">@${data.login}</a>
+        </div>
+      </div>
+      <p><strong>Repositórios públicos:</strong> ${data.public_repos}</p>
+      <p><strong>Seguidores:</strong> ${data.followers}</p>
+      <p><strong>Seguindo:</strong> ${data.following}</p>
+      <p><strong>Localização:</strong> ${data.location || 'Não informada'}</p>
+      <p><strong>Conta criada:</strong> ${new Date(data.created_at).toLocaleDateString()}</p>
     `;
     resultado.classList.remove("d-none");
   } catch (err) {
